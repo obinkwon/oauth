@@ -1,1 +1,3 @@
-rootProject.name = 'assignment-kob'
+rootProject.name = 'oauth'
+
+include 'oauth-api'
