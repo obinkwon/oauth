@@ -6,33 +6,28 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-
-import oauth.core.handler.CustomAuthenticationFailureHandler;
-import oauth.core.handler.CustomAuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
-@Order(0)
-public class SecurityConfig {
+@Order(1)
+public class ApiSecurityConfig {
 	
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-	    http
-	        .formLogin(form -> form
-	            .loginProcessingUrl("/api/login")
-	            .successHandler(new CustomAuthenticationSuccessHandler())
-	            .failureHandler(new CustomAuthenticationFailureHandler())
-	            .permitAll()
-	        )
-	    	.authorizeHttpRequests(authz -> authz
-	    		.requestMatchers("/login", "/error").permitAll()
-	    		.anyRequest().authenticated()
-	    	);
-	    
-	    return http.build();
+		http
+			.securityMatcher("/api/**")
+			.csrf(AbstractHttpConfigurer::disable)
+			.authorizeHttpRequests(authz -> authz
+				.requestMatchers("/api/admin/**").hasRole("ADMIN")
+				.requestMatchers("/api/user/**").hasRole("USER")
+				.anyRequest().permitAll()
+			);
+		
+		return http.build();
 	}
-	
+
 	@Bean
 	WebSecurityCustomizer webSecurityCustomizer() {
 		return (web) -> web.ignoring().requestMatchers("/css/**", "/js/**", "/images/**");
