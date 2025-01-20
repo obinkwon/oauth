@@ -13,20 +13,20 @@ import oauth.core.handler.CustomAuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
-@Order(0)
 public class SecurityConfig {
 	
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	@Order(2)
+	SecurityFilterChain securityWebFilterChain(HttpSecurity http) throws Exception {
 	    http
 	        .formLogin(form -> form
-	            .loginProcessingUrl("/api/login")
+	            .loginProcessingUrl("/web/login")
 	            .successHandler(new CustomAuthenticationSuccessHandler())
 	            .failureHandler(new CustomAuthenticationFailureHandler())
 	            .permitAll()
 	        )
 	    	.authorizeHttpRequests(authz -> authz
-	    		.requestMatchers("/login", "/error").permitAll()
+	    		.requestMatchers("/web/login", "/web/login-fail", "/web/main").permitAll()
 	    		.anyRequest().authenticated()
 	    	);
 	    
