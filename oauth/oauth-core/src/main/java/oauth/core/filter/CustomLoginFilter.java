@@ -45,7 +45,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		
-		String token = jwtUtil.generateToken(authentication.getName());
+		String token = jwtUtil.generateToken(authentication.getName(), authentication.getAuthorities());
 
 		response.setContentType("application/json");
 		response.getWriter().write(objectMapper
