@@ -11,25 +11,26 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import oauth.core.filter.CustomLoginFilter;
 
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class JwtSecurityConfig {
 	
 	private final AuthenticationConfiguration authenticationConfiguration;
 	
 	@Bean
 	@Order(0)
-	SecurityFilterChain securityJwtFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain jwtSecurityFilterChain(HttpSecurity http) throws Exception {
 		
 		AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
 		
 		http
 			.securityMatcher("/api/**")
 			.csrf(AbstractHttpConfigurer::disable)
+			.formLogin(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests(authz -> authz
 				.requestMatchers("/api/login").permitAll()
                 .anyRequest().authenticated()

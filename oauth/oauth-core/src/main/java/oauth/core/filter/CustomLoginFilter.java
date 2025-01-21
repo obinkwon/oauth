@@ -15,13 +15,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import oauth.core.util.JwtUtil;
 
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 	private final AuthenticationManager authenticationManager;
+	private final JwtUtil jwtUtil;
 	
 	public CustomLoginFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
+		this.jwtUtil = new JwtUtil();
         setFilterProcessesUrl("/api/login"); // 로그인 처리 URL
     }
 	
@@ -30,7 +33,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 			throws AuthenticationException {
 		String username = obtainUsername(request);
 		String password = obtainPassword(request);
-
+		
 		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
 
 		return authenticationManager.authenticate(authRequest);
@@ -41,6 +44,8 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 			Authentication authentication) throws JsonProcessingException, IOException {
 
 		ObjectMapper objectMapper = new ObjectMapper();
+		
+		String token = jwtUtil.generateToken(authentication.getName());
 
 		response.setContentType("application/json");
 		response.getWriter().write(objectMapper
@@ -48,7 +53,9 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 						"message", 
 						"Authentication successful", 
 						"user", 
-						authentication.getPrincipal()
+						authentication.getPrincipal(),
+						"token",
+						token
 				)));
 	}
 

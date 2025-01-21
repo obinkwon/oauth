@@ -17,7 +17,7 @@ public class SecurityConfig {
 	
 	@Bean
 	@Order(2)
-	SecurityFilterChain securityWebFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 	    http
 	        .formLogin(form -> form
 	            .loginProcessingUrl("/web/login")
