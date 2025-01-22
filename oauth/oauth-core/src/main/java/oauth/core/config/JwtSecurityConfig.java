@@ -35,6 +35,10 @@ public class JwtSecurityConfig {
 				.requestMatchers("/api/login").permitAll()
                 .anyRequest().authenticated()
 			)
+			.oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
+                .defaultSuccessUrl("/home", true)
+            )
 			.addFilterAt(new CustomLoginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class);
 		
 		return http.build();

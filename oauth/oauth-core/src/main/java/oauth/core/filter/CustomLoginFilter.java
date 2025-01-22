@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import oauth.core.util.JwtUtil;
@@ -45,17 +46,20 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		
-		String token = jwtUtil.generateToken(authentication.getName(), authentication.getAuthorities());
+		String token = jwtUtil.generateToken(authentication);
 
+		Cookie jwtCookie = new Cookie("token", token);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(true);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge((int) 1000 * 60 * 60 / 1000);
+
+        response.addCookie(jwtCookie);
 		response.setContentType("application/json");
 		response.getWriter().write(objectMapper
 				.writeValueAsString(Map.of(
-						"message", 
-						"Authentication successful", 
-						"user", 
-						authentication.getPrincipal(),
-						"token",
-						token
+						"message", "Authentication successful",
+						"token", token
 				)));
 	}
 

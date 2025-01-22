@@ -6,6 +6,7 @@ import java.security.PublicKey;
 import java.util.Collection;
 import java.util.Date;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import io.jsonwebtoken.Claims;
@@ -27,10 +28,10 @@ public class JwtUtil {
 	}
 
 	// JWT 토큰 생성
-	public String generateToken(String username, Collection <?> role) {
+	public String generateToken(Authentication authentication) {
 		return Jwts.builder()
-	    		.subject(username)
-	    		.claim("role",role)
+	    		.subject(authentication.getName())
+	    		.claim("user",authentication.getDetails())
 	    		.issuedAt(new Date(System.currentTimeMillis()))
 	    		.expiration(new Date(System.currentTimeMillis() + expirationTimeMs))
 	    		.signWith(privateKey) // privateKey로 암호화
