@@ -9,6 +9,7 @@
 - spring boot : 3.4.1
 - java : 17
 - gradle : 8.11.1
+- jjwt : 0.12.6
 <br/><br/><br/>
 
 ## 수정내역
