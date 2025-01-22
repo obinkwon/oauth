@@ -2,3 +2,4 @@ rootProject.name = 'oauth'
 
 include 'oauth-api'
 include 'oauth-core'
+include 'oauth-web'

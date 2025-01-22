@@ -3,11 +3,10 @@ package oauth.core.util;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Collection;
 import java.util.Date;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -34,7 +33,18 @@ public class JwtUtil {
 	    		.claim("user",authentication.getDetails())
 	    		.issuedAt(new Date(System.currentTimeMillis()))
 	    		.expiration(new Date(System.currentTimeMillis() + expirationTimeMs))
-	    		.signWith(privateKey) // privateKey로 암호화
+	    		.signWith(privateKey)
+	    		.compact();
+	}
+	
+	// oauth2 토큰 생성
+	public String generateOauth2Token(OAuth2User oauth2User) {
+		return Jwts.builder()
+	    		.subject(oauth2User.getAttribute("email"))
+	    		.claim("user",oauth2User.getAttributes())
+	    		.issuedAt(new Date(System.currentTimeMillis()))
+	    		.expiration(new Date(System.currentTimeMillis() + expirationTimeMs))
+	    		.signWith(privateKey)
 	    		.compact();
 	}
     
