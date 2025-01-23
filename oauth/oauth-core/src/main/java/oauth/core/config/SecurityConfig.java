@@ -9,12 +9,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
+import oauth.core.filter.JwtAuthenticationFilter;
 import oauth.core.handler.CustomAuthenticationFailureHandler;
 import oauth.core.handler.CustomAuthenticationSuccessHandler;
 import oauth.core.handler.CustomOAuth2FailureHandler;
 import oauth.core.handler.CustomOAuth2SuccessHandler;
+import oauth.core.util.JwtUtil;
 
 @Configuration
 @EnableWebSecurity
@@ -25,13 +28,15 @@ public class SecurityConfig {
 	private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 	private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 	private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
+	private final JwtUtil jwtUtil;
 	
 	@Bean
 	@Order(2)
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(AbstractHttpConfigurer::disable);
+		
 	    http.formLogin(form -> form
-	        	.loginPage("/web/login-view")
+	        	.loginPage("/web/login")
 	            .loginProcessingUrl("/api/login")
 	            .successHandler(customAuthenticationSuccessHandler)
 	            .failureHandler(customAuthenticationFailureHandler)
@@ -47,13 +52,15 @@ public class SecurityConfig {
             );
 	    
 	    http.authorizeHttpRequests(authz -> authz
-	    		.requestMatchers("/web/login-view", "/web/login-fail", "/web/main").permitAll()
+	    		.requestMatchers("/web/login", "/web/login-fail").permitAll()
 	    		.anyRequest().authenticated()
 	    	);
 	    
 	    http.sessionManagement(session -> session
 	            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 	        );
+	    
+	    http.addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 	    
 	    return http.build();
 	}

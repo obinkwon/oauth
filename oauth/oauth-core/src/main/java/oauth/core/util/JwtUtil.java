@@ -3,16 +3,28 @@ package oauth.core.util;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
+@Component
 public class JwtUtil {
 
 	private final PrivateKey privateKey;
@@ -30,7 +42,10 @@ public class JwtUtil {
 	public String generateToken(Authentication authentication) {
 		return Jwts.builder()
 	    		.subject(authentication.getName())
-	    		.claim("user",authentication.getDetails())
+	    		.claim("authorities",authentication.getAuthorities().stream()
+							                        .map(GrantedAuthority::getAuthority)
+							                        .collect(Collectors.joining(",")))
+	    		.claim("user",authentication.getCredentials())
 	    		.issuedAt(new Date(System.currentTimeMillis()))
 	    		.expiration(new Date(System.currentTimeMillis() + expirationTimeMs))
 	    		.signWith(privateKey)
@@ -41,24 +56,43 @@ public class JwtUtil {
 	public String generateOauth2Token(OAuth2User oauth2User) {
 		return Jwts.builder()
 	    		.subject(oauth2User.getAttribute("email"))
+	    		.claim("authorities","ROLE_ANONYMOUS")
 	    		.claim("user",oauth2User.getAttributes())
 	    		.issuedAt(new Date(System.currentTimeMillis()))
 	    		.expiration(new Date(System.currentTimeMillis() + expirationTimeMs))
 	    		.signWith(privateKey)
 	    		.compact();
 	}
+	
+	// JWT 토큰 인증 정보 확인
+	public Authentication getAuthentication(String accessToken) {
+		
+		Jws<Claims> token = getToken(accessToken);
+		Claims claims = token.getPayload();
+		Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("authorities").toString().split(","))
+                													.map(SimpleGrantedAuthority::new)
+                													.toList();
+		UserDetails principal = new User(claims.getSubject(), "", authorities);
+		
+		return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+	}
+	
+	// JWT 토큰 확인
+    private Jws<Claims> getToken(String token) {
+        return Jwts.parser()
+					.verifyWith(publicKey)
+					.build()
+					.parseSignedClaims(token);
+    }
     
 	// JWT 토큰 검증
-	public String validateToken(String token) {
-		 
+	public boolean validateToken(String token) {
 		try {
-			Jws<Claims> jws = Jwts.parser()
-								.verifyWith(publicKey)
-								.build()
-								.parseSignedClaims(token);
-			return jws.getPayload().getSubject();
+			getToken(token);
+			return true;
 		} catch (JwtException e) {
-			throw new IllegalArgumentException("Invalid JWT token", e);
+			log.error("JwtException ::: {}", e.getMessage());
+			return false;
 		}
 	}
 }

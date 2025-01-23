@@ -56,11 +56,13 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         response.addCookie(jwtCookie);
 		response.setContentType("application/json");
+		response.addHeader("Authorization", "Bearer " + token);
 		response.getWriter().write(objectMapper
 				.writeValueAsString(Map.of(
 						"message", "Authentication successful",
 						"token", token
 				)));
+		response.sendRedirect("/web/main");
 	}
 
 	@Override

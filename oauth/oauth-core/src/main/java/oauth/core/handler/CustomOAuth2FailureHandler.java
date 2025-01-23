@@ -20,6 +20,6 @@ public class CustomOAuth2FailureHandler implements AuthenticationFailureHandler 
 		
 		log.error("OAuth2 Authentication Failed: {}",exception.getMessage());
 		
-		response.sendRedirect("/web/login-view?error=true");
+		response.sendRedirect("/web/login?error=true");
 	}
 }

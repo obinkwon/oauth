@@ -18,13 +18,13 @@ import oauth.core.filter.CustomLoginFilter;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class JwtSecurityConfig {
+public class ApiSecurityConfig {
 	
 	private final AuthenticationConfiguration authenticationConfiguration;
 	
 	@Bean
 	@Order(0)
-	SecurityFilterChain jwtSecurityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
 		
 		AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
 		
