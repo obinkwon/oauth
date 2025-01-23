@@ -52,7 +52,7 @@ public class SecurityConfig {
             );
 	    
 	    http.authorizeHttpRequests(authz -> authz
-	    		.requestMatchers("/web/login", "/web/login-fail").permitAll()
+	    		.requestMatchers("/web/login", "/web/login-fail", "/error").permitAll()
 	    		.anyRequest().authenticated()
 	    	);
 	    

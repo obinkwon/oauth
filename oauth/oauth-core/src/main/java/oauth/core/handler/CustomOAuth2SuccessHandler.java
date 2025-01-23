@@ -34,8 +34,9 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 		
         OAuth2AuthenticationToken oauth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
         OAuth2User oauth2User = oauth2AuthenticationToken.getPrincipal();
+        String clientRegistrationId = oauth2AuthenticationToken.getAuthorizedClientRegistrationId().toUpperCase();
         
-		String token = jwtUtil.generateOauth2Token(oauth2User);
+		String token = jwtUtil.generateOauth2Token(oauth2User, clientRegistrationId);
 
 		Cookie jwtCookie = new Cookie("token", token);
         jwtCookie.setHttpOnly(true);

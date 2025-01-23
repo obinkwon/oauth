@@ -6,6 +6,7 @@ import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -53,11 +54,18 @@ public class JwtUtil {
 	}
 	
 	// oauth2 토큰 생성
-	public String generateOauth2Token(OAuth2User oauth2User) {
+	public String generateOauth2Token(OAuth2User oauth2User, String clientRegistrationId) {
+		log.error("clientRegistrationId ::: {}", clientRegistrationId);
+		Map<String, Object> attributes = oauth2User.getAttributes();
+		
+		if("NAVER".equals(clientRegistrationId) ) {
+			attributes = (Map)oauth2User.getAttributes().get("response");
+		}
+		
 		return Jwts.builder()
-	    		.subject(oauth2User.getAttribute("email"))
+	    		.subject((String)attributes.get("email"))
 	    		.claim("authorities","ROLE_ANONYMOUS")
-	    		.claim("user",oauth2User.getAttributes())
+	    		.claim("attributes",attributes)
 	    		.issuedAt(new Date(System.currentTimeMillis()))
 	    		.expiration(new Date(System.currentTimeMillis() + expirationTimeMs))
 	    		.signWith(privateKey)
