@@ -73,6 +73,15 @@ body {
     background-color: #03B169;
 }
 
+.login-button.kakao {
+    background-color: #FEE500;
+    color: black;
+}
+
+.login-button.kakao:hover {
+    background-color: #FFC107;
+}
+
 .login-button.custom {
     background-color: #ff9900;
     color: white;

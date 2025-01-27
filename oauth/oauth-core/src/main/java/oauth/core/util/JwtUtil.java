@@ -55,11 +55,12 @@ public class JwtUtil {
 	
 	// oauth2 토큰 생성
 	public String generateOauth2Token(OAuth2User oauth2User, String clientRegistrationId) {
-		log.error("clientRegistrationId ::: {}", clientRegistrationId);
 		Map<String, Object> attributes = oauth2User.getAttributes();
 		
 		if("NAVER".equals(clientRegistrationId) ) {
 			attributes = (Map)oauth2User.getAttributes().get("response");
+		} else if("KAKAO".equals(clientRegistrationId) ) {
+			attributes = (Map)oauth2User.getAttributes().get("kakao_account");
 		}
 		
 		return Jwts.builder()
