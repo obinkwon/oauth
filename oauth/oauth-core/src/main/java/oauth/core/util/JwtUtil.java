@@ -6,7 +6,6 @@ import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +14,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
@@ -23,6 +21,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
+import oauth.core.model.OauthAttribute;
 
 @Slf4j
 @Component
@@ -39,7 +38,7 @@ public class JwtUtil {
 		this.publicKey = keyPair.getPublic();
 	}
 
-	// JWT 토큰 생성
+	// 일반 JWT 토큰 생성
 	public String generateToken(Authentication authentication) {
 		return Jwts.builder()
 	    		.subject(authentication.getName())
@@ -53,20 +52,13 @@ public class JwtUtil {
 	    		.compact();
 	}
 	
-	// oauth2 토큰 생성
-	public String generateOauth2Token(OAuth2User oauth2User, String clientRegistrationId) {
-		Map<String, Object> attributes = oauth2User.getAttributes();
-		
-		if("NAVER".equals(clientRegistrationId) ) {
-			attributes = (Map)oauth2User.getAttributes().get("response");
-		} else if("KAKAO".equals(clientRegistrationId) ) {
-			attributes = (Map)oauth2User.getAttributes().get("kakao_account");
-		}
+	// oauth2 JWT 토큰 생성
+	public String generateOauth2Token(OauthAttribute oauthAttribute) {
 		
 		return Jwts.builder()
-	    		.subject((String)attributes.get("email"))
+	    		.subject(oauthAttribute.getEmail())
 	    		.claim("authorities","ROLE_ANONYMOUS")
-	    		.claim("attributes",attributes)
+	    		.claim("attributes",oauthAttribute.getAttributes())
 	    		.issuedAt(new Date(System.currentTimeMillis()))
 	    		.expiration(new Date(System.currentTimeMillis() + expirationTimeMs))
 	    		.signWith(privateKey)

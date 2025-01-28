@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import oauth.core.model.OauthAttribute;
 import oauth.core.util.JwtUtil;
 
 @Slf4j
@@ -32,11 +31,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
 		
-        OAuth2AuthenticationToken oauth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
-        OAuth2User oauth2User = oauth2AuthenticationToken.getPrincipal();
-        String clientRegistrationId = oauth2AuthenticationToken.getAuthorizedClientRegistrationId().toUpperCase();
-        
-		String token = jwtUtil.generateOauth2Token(oauth2User, clientRegistrationId);
+		String token = jwtUtil.generateOauth2Token(new OauthAttribute((OAuth2AuthenticationToken) authentication));
 
 		Cookie jwtCookie = new Cookie("token", token);
         jwtCookie.setHttpOnly(true);
