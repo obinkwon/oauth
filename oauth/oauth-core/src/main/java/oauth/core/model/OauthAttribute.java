@@ -5,17 +5,14 @@ import java.util.Map;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class OauthAttribute {
 
 	private final String email;
 	private final String registrationId;
 	private final Map<String, Object> attributes;
-	
 	
 	@SuppressWarnings("unchecked")
 	public OauthAttribute(OAuth2AuthenticationToken oauth2AuthenticationToken) {
