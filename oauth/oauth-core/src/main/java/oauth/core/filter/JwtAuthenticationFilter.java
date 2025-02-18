@@ -12,8 +12,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import oauth.core.util.JwtUtil;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -23,21 +25,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 
-		String token = resolveToken(request);
-
-		if (token != null && jwtUtil.validateToken(token)) {
-			Authentication authentication = jwtUtil.getAuthentication(token);
-			SecurityContextHolder.getContext().setAuthentication(authentication);
+		String token = resolveToken(request, "token");
+		
+		if(token != null) {
+			if (jwtUtil.validateToken(token)) {
+				Authentication authentication = jwtUtil.getAuthentication(token);
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+			}
 		}
 
 		chain.doFilter(request, response);
 	}
 
-	private String resolveToken(HttpServletRequest request) {
+	private String resolveToken(HttpServletRequest request, String tokenName) {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
-				if ("token".equals(cookie.getName())) {
+				if (tokenName.equals(cookie.getName())) {
 					return cookie.getValue();
 				}
 			}

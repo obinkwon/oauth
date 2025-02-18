@@ -29,7 +29,7 @@ public class ApiSecurityConfig {
 		AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
 		
 		http
-			.securityMatcher("/api/**")
+			.securityMatcher("/api/login")
 			.csrf(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests(authz -> authz

@@ -2,7 +2,9 @@ package oauth.core.filter;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,19 +15,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import oauth.core.util.CookieUtil;
 import oauth.core.util.JwtUtil;
 
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 	private final AuthenticationManager authenticationManager;
-	private final JwtUtil jwtUtil;
+	@Autowired
+	private JwtUtil jwtUtil;
 	
 	public CustomLoginFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
-		this.jwtUtil = new JwtUtil();
         setFilterProcessesUrl("/api/login"); // 로그인 처리 URL
     }
 	
@@ -46,15 +48,13 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		
-		String token = jwtUtil.generateToken(authentication);
+		String id = UUID.randomUUID().toString();
+		String token = jwtUtil.generateToken(authentication, id);
+		// Refresh Token 생성
+		jwtUtil.getRefreshToken(id);
 
-		Cookie jwtCookie = new Cookie("token", token);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(true);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge((int) 1000 * 60 * 60 / 1000);
-
-        response.addCookie(jwtCookie);
+        CookieUtil.generateCookie(response, "token", token, (int) 1000 * 60 * 60 / 1000);
+        
 		response.setContentType("application/json");
 		response.addHeader("Authorization", "Bearer " + token);
 		response.getWriter().write(objectMapper
