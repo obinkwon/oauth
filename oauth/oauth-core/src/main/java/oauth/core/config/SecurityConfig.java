@@ -56,6 +56,8 @@ public class SecurityConfig {
 	    		.anyRequest().authenticated()
 	    	);
 	    
+	    http.anonymous(AbstractHttpConfigurer::disable);
+	    
 	    http.sessionManagement(session -> session
 	            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 	        );

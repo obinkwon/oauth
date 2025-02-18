@@ -14,6 +14,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import oauth.core.properties.JwtProperties;
 import oauth.core.util.CookieUtil;
 import oauth.core.util.JwtUtil;
 
@@ -23,6 +24,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 	
 	private final JwtUtil jwtUtil;
 	private final ObjectMapper objectMapper;
+	private final JwtProperties jwtProperties;
 	
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -33,7 +35,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 		// Refresh Token 생성
 		jwtUtil.refreshToken(id);
 		
-		CookieUtil.generateCookie(response, "token", token, (int) 1000 * 60 * 60 / 1000);
+		CookieUtil.generateCookie(response, "token", token, (int) jwtProperties.getRefreshtokenTime().toMinutes());
         
 		response.setContentType("application/json");
 		response.addHeader("Authorization", "Bearer " + token);

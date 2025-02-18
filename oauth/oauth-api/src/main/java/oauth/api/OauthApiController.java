@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import oauth.core.properties.JwtProperties;
 import oauth.core.util.CookieUtil;
 import oauth.core.util.JwtUtil;
 
@@ -21,19 +22,18 @@ import oauth.core.util.JwtUtil;
 public class OauthApiController {
 	
 	private final JwtUtil jwtUtil;
+	private final JwtProperties jwtProperties;
 	
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshApi(HttpServletResponse response, @RequestParam("token") String token) throws Exception {
 
-    	log.error("token :::: {}",token);
     	String refreshToken = jwtUtil.getRefreshToken(token);
-		log.error("refreshToken :::: {}",refreshToken);
+    	
 		if(refreshToken != null) {
 			String id = jwtUtil.getRefreshTokenId(refreshToken);
 			Authentication authentication = jwtUtil.getAuthentication(token);
 			String accessToken = jwtUtil.generateToken(authentication, id);
-			log.error("accessToken :::: {}",accessToken);
-			CookieUtil.generateCookie(response, "token", accessToken, (int) 1000 * 60 * 60 / 1000);
+			CookieUtil.generateCookie(response, "token", accessToken, (int) jwtProperties.getRefreshtokenTime().toMinutes());
 	        
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 			return ResponseEntity.ok("success");
