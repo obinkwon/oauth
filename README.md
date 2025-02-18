@@ -14,6 +14,8 @@
 
 ## 수정내역
 ### 02.18
+- jwt properties 추가
+- jwt 토큰 refresh체크 방식 수정
 - redis 연동
 ### 01.28
 - oauth2 깃허브 로그인 기능 구현
