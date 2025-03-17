@@ -17,6 +17,7 @@ import oauth.core.handler.CustomAuthenticationFailureHandler;
 import oauth.core.handler.CustomAuthenticationSuccessHandler;
 import oauth.core.handler.CustomOAuth2FailureHandler;
 import oauth.core.handler.CustomOAuth2SuccessHandler;
+import oauth.core.properties.JwtProperties;
 import oauth.core.util.JwtUtil;
 
 @Configuration
@@ -29,6 +30,7 @@ public class SecurityConfig {
 	private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 	private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
 	private final JwtUtil jwtUtil;
+	private final JwtProperties jwtProperties;
 	
 	@Bean
 	@Order(2)
@@ -62,7 +64,7 @@ public class SecurityConfig {
 	            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 	        );
 	    
-	    http.addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+	    http.addFilterBefore(new JwtAuthenticationFilter(jwtUtil, jwtProperties), UsernamePasswordAuthenticationFilter.class);
 	    
 	    return http.build();
 	}

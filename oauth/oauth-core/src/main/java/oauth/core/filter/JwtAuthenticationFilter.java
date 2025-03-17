@@ -2,7 +2,6 @@ package oauth.core.filter;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,11 +20,11 @@ import oauth.core.util.JwtUtil;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
-	@Autowired
-	private JwtProperties jwtProperties;
+	private final JwtProperties jwtProperties;
 	
-	public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+	public JwtAuthenticationFilter(JwtUtil jwtUtil, JwtProperties jwtProperties) {
 		this.jwtUtil = jwtUtil;
+		this.jwtProperties = jwtProperties;
 	}
 
 	@Override
