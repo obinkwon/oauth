@@ -1,2 +1,5 @@
 dependencies {
+	jar {
+	    exclude('*.properties') // 모든 .properties 파일 제외
+	}
 }
