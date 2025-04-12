@@ -8,15 +8,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import oauth.core.properties.JwtProperties;
 import oauth.core.util.CookieUtil;
 import oauth.core.util.JwtUtil;
 
-@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
@@ -31,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 
-		String token = resolveToken(request, "token");
+		String token = CookieUtil.getCookieToken(request);
 		
 		if(token != null) {
 			if (jwtUtil.validateToken(token)) {
@@ -44,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					String id = jwtUtil.getRefreshTokenId(refreshToken);
 					Authentication authentication = jwtUtil.getAuthentication(token);
 					String accessToken = jwtUtil.generateToken(authentication, id);
-					CookieUtil.generateCookie(response, "token", accessToken, (int) jwtProperties.getRefreshtokenTime().toMinutes());
+					CookieUtil.generateCookie(response, accessToken, (int) jwtProperties.getRefreshtokenTime().toMinutes());
 					
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 				}
@@ -52,17 +49,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		chain.doFilter(request, response);
-	}
-
-	private String resolveToken(HttpServletRequest request, String tokenName) {
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (tokenName.equals(cookie.getName())) {
-					return cookie.getValue();
-				}
-			}
-		}
-		return null;
 	}
 }

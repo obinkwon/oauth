@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import oauth.core.filter.JwtAuthenticationFilter;
 import oauth.core.handler.CustomAuthenticationFailureHandler;
 import oauth.core.handler.CustomAuthenticationSuccessHandler;
+import oauth.core.handler.CustomLogoutHandler;
+import oauth.core.handler.CustomLogoutSuccessHandler;
 import oauth.core.handler.CustomOAuth2FailureHandler;
 import oauth.core.handler.CustomOAuth2SuccessHandler;
 import oauth.core.properties.JwtProperties;
@@ -29,6 +31,8 @@ public class SecurityConfig {
 	private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 	private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 	private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
+	private final CustomLogoutHandler customLogoutHandler;
+	private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
 	private final JwtUtil jwtUtil;
 	private final JwtProperties jwtProperties;
 	
@@ -45,6 +49,14 @@ public class SecurityConfig {
 	            .permitAll()
 	        );
 	    
+	    http.logout(logout -> logout
+	            .logoutUrl("/api/logout/process").permitAll()
+	            .addLogoutHandler(customLogoutHandler)
+	            .logoutSuccessHandler(customLogoutSuccessHandler)
+	            .deleteCookies("JSESSIONID")
+	            .invalidateHttpSession(true)
+	    	);
+	    
 	    http.oauth2Login(oauth2 -> oauth2
                 .redirectionEndpoint(redir -> redir
                     .baseUri("/login/oauth2/code/*")
@@ -54,7 +66,7 @@ public class SecurityConfig {
             );
 	    
 	    http.authorizeHttpRequests(authz -> authz
-	    		.requestMatchers("/web/login", "/web/login-fail", "/error", "/api/oauth/refresh").permitAll()
+	    		.requestMatchers("/web/login", "/web/login-fail", "/error", "/api/oauth/refresh", "/api/logout/process").permitAll()
 	    		.anyRequest().authenticated()
 	    	);
 	    

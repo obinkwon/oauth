@@ -35,7 +35,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 		// Refresh Token 생성
 		jwtUtil.refreshToken(id);
 		
-		CookieUtil.generateCookie(response, "token", token, (int) jwtProperties.getRefreshtokenTime().toMinutes());
+		CookieUtil.generateCookie(response, token, (int) jwtProperties.getRefreshtokenTime().toMinutes());
         
 		response.setContentType("application/json");
 		response.addHeader("Authorization", "Bearer " + token);

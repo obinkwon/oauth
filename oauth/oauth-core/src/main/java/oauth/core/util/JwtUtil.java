@@ -94,6 +94,18 @@ public class JwtUtil {
 			return null;
 		}
 	}
+	
+	// Refresh Token 만료
+	public void expireRefreshToken(String accessToken) {
+		try {
+			Claims claims = getToken(accessToken);
+			String id = claims.getId();
+			// Redis에 저장된 Refresh Token 제거
+			redisTemplate.delete("id:" + id + ":refresh");
+		} catch (JwtException e) {
+			log.error("expireRefreshToken JwtException ::: {}", e.getMessage());
+		}
+	}
 
 	// Refresh Token 검증
 	public String getRefreshTokenId(String refreshToken) {
