@@ -34,10 +34,10 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
-		String username = obtainUsername(request);
-		String password = obtainPassword(request);
+		String email = request.getParameter("email");
+        String password = obtainPassword(request);
 		
-		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(email, password);
 
 		return authenticationManager.authenticate(authRequest);
 	}

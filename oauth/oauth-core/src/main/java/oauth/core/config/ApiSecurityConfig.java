@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -20,13 +19,9 @@ import oauth.core.filter.CustomLoginFilter;
 @RequiredArgsConstructor
 public class ApiSecurityConfig {
 	
-	private final AuthenticationConfiguration authenticationConfiguration;
-	
 	@Bean
 	@Order(0)
-	SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
-		
-		AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
+	SecurityFilterChain apiSecurityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
 		
 		http
 			.securityMatcher("/api/login")

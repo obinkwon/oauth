@@ -3,11 +3,14 @@ package oauth.core.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -20,6 +23,7 @@ import oauth.core.handler.CustomLogoutSuccessHandler;
 import oauth.core.handler.CustomOAuth2FailureHandler;
 import oauth.core.handler.CustomOAuth2SuccessHandler;
 import oauth.core.properties.JwtProperties;
+import oauth.core.provider.CustomAuthenticationProvider;
 import oauth.core.util.JwtUtil;
 
 @Configuration
@@ -85,4 +89,16 @@ public class SecurityConfig {
 	WebSecurityCustomizer webSecurityCustomizer() {
 		return (web) -> web.ignoring().requestMatchers("/css/**", "/js/**", "/images/**");
 	}
+	
+	@Bean
+	AuthenticationManager authenticationManager(HttpSecurity http, CustomAuthenticationProvider customAuthenticationProvider) throws Exception {
+	    return http.getSharedObject(AuthenticationManagerBuilder.class)
+			       .authenticationProvider(customAuthenticationProvider)
+			       .build();
+	}
+	
+    @Bean
+    BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

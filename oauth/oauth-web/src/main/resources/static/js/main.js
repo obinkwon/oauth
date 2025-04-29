@@ -1,5 +1,6 @@
 /* 메인 js */
 
+// 로그아웃
 function logout() {
 	console.log('logout')
     $.ajax({
@@ -12,4 +13,8 @@ function logout() {
             console.error("로그아웃 실패", err);
         }
     });
+}
+// 회원가입
+function register() {
+	alert('');
 }
