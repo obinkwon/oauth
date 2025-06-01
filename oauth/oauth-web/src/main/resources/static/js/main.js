@@ -14,7 +14,3 @@ function logout() {
         }
     });
 }
-// 회원가입
-function register() {
-	alert('');
-}

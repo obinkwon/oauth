@@ -13,6 +13,12 @@ public class LoginWebController {
         return "thymeleaf/login";
     }
     
+    @GetMapping("/web/signup")
+    public String signupView(final Model model) {
+    	
+    	return "thymeleaf/signup";
+    }
+    
     @GetMapping("/web/main")
     public String mainView(final Model model) {
     	

@@ -70,7 +70,7 @@ public class SecurityConfig {
             );
 	    
 	    http.authorizeHttpRequests(authz -> authz
-	    		.requestMatchers("/web/login", "/web/login-fail", "/error", "/api/oauth/refresh", "/api/logout/process").permitAll()
+	    		.requestMatchers("/web/login", "/web/login-fail", "/error", "/api/oauth/refresh", "/api/logout/process", "/web/signup").permitAll()
 	    		.anyRequest().authenticated()
 	    	);
 	    
