@@ -25,7 +25,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import oauth.core.model.OauthAttribute;
+import oauth.core.model.oauth.OauthAttribute;
 import oauth.core.properties.JwtProperties;
 
 @Slf4j

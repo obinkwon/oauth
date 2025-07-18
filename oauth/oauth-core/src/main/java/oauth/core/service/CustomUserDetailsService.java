@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import oauth.core.entity.User;
+import oauth.core.entity.UserEntity;
 import oauth.core.repository.UserRepository;
 
 @Service
@@ -19,14 +19,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findById(email).orElseThrow(() -> new UsernameNotFoundException("사용자 없음: " + email));
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("사용자 없음: " + id));
 
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_USER"))
-        );
+//        return new org.springframework.security.core.userdetails.User(
+//                userEntity.getEmail(),
+//                userEntity.getPassword(),
+//                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+//        );
+        return null;
     }
 }
 

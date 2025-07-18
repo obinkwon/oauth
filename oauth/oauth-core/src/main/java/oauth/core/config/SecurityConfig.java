@@ -1,5 +1,11 @@
 package oauth.core.config;
 
+import lombok.RequiredArgsConstructor;
+import oauth.core.filter.JwtAuthenticationFilter;
+import oauth.core.handler.*;
+import oauth.core.properties.JwtProperties;
+import oauth.core.provider.CustomAuthenticationProvider;
+import oauth.core.util.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -11,20 +17,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import lombok.RequiredArgsConstructor;
-import oauth.core.filter.JwtAuthenticationFilter;
-import oauth.core.handler.CustomAuthenticationFailureHandler;
-import oauth.core.handler.CustomAuthenticationSuccessHandler;
-import oauth.core.handler.CustomLogoutHandler;
-import oauth.core.handler.CustomLogoutSuccessHandler;
-import oauth.core.handler.CustomOAuth2FailureHandler;
-import oauth.core.handler.CustomOAuth2SuccessHandler;
-import oauth.core.properties.JwtProperties;
-import oauth.core.provider.CustomAuthenticationProvider;
-import oauth.core.util.JwtUtil;
 
 @Configuration
 @EnableWebSecurity
@@ -41,20 +36,20 @@ public class SecurityConfig {
 	private final JwtProperties jwtProperties;
 	
 	@Bean
-	@Order(2)
+	@Order(0)
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(AbstractHttpConfigurer::disable);
 		
 	    http.formLogin(form -> form
 	        	.loginPage("/web/login")
-	            .loginProcessingUrl("/api/login")
+	            .loginProcessingUrl("/web/login/process")
 	            .successHandler(customAuthenticationSuccessHandler)
 	            .failureHandler(customAuthenticationFailureHandler)
 	            .permitAll()
 	        );
 	    
 	    http.logout(logout -> logout
-	            .logoutUrl("/api/logout/process").permitAll()
+	            .logoutUrl("/web/logout/process").permitAll()
 	            .addLogoutHandler(customLogoutHandler)
 	            .logoutSuccessHandler(customLogoutSuccessHandler)
 	            .deleteCookies("JSESSIONID")
@@ -70,7 +65,7 @@ public class SecurityConfig {
             );
 	    
 	    http.authorizeHttpRequests(authz -> authz
-	    		.requestMatchers("/web/login", "/web/login-fail", "/error", "/api/oauth/refresh", "/api/logout/process", "/web/signup").permitAll()
+	    		.requestMatchers("/web/login", "/web/login-fail", "/error", "/api/oauth/refresh", "/api/logout/*", "/web/signup", "/api/login/*").permitAll()
 	    		.anyRequest().authenticated()
 	    	);
 	    
@@ -96,9 +91,10 @@ public class SecurityConfig {
 			       .authenticationProvider(customAuthenticationProvider)
 			       .build();
 	}
-	
+
+	// 암호화 방식 설정
     @Bean
-    BCryptPasswordEncoder bCryptPasswordEncoder() {
+	PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

@@ -1,4 +1,4 @@
-package oauth.core.model;
+package oauth.core.model.oauth;
 
 import java.util.Map;
 

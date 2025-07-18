@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,8 +9,8 @@
 <body>
     <div class="login-container">
         <h1>회원가입</h1>
-        <form action="/api/register" method="post">
-            <input class="login-input" type="text" id="username" name="username" placeholder="Username" required="" autofocus="">
+        <form th:action="@{/api/login/signup}" method="post">
+            <input class="login-input" type="text" id="userName" name="userName" placeholder="Username" required="" autofocus="">
             <input class="login-input" type="password" id="password" name="password" placeholder="Password" required="">
             <input class="login-input" type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required="">
             <input class="login-input" type="email" id="email" name="email" placeholder="Email" required="">
