@@ -12,7 +12,7 @@ public class UserRegistRequestDto {
 
     @Size(min = 3, max = 25)
     @NotEmpty(message = "사용자 명은 필수입니다.")
-    private String userName;
+    private String username;
 
     @NotEmpty(message = "비밀번호는 필수입니다.")
     private String password;

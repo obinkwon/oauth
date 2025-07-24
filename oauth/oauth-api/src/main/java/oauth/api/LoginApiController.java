@@ -24,7 +24,7 @@ public class LoginApiController {
             return "redirect:/web/signup";
         }
 
-        UserEntity userEntity = userService.createUserData(request.getUserName(), request.getEmail(), request.getPassword());
+        UserEntity userEntity = userService.createUserData(request.getUsername(), request.getEmail(), request.getPassword());
         return "redirect:/web/login";
     }
 }

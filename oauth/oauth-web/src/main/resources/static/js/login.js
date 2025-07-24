@@ -2,5 +2,5 @@
 
 // 회원가입
 function register() {
-	location.href='/web/signup';
+	location.href='/web/login/signup';
 }

@@ -42,14 +42,14 @@ public class SecurityConfig {
 		
 	    http.formLogin(form -> form
 	        	.loginPage("/web/login")
-	            .loginProcessingUrl("/web/login/process")
+	            .loginProcessingUrl("/api/login/process")
 	            .successHandler(customAuthenticationSuccessHandler)
 	            .failureHandler(customAuthenticationFailureHandler)
 	            .permitAll()
 	        );
 	    
 	    http.logout(logout -> logout
-	            .logoutUrl("/web/logout/process").permitAll()
+	            .logoutUrl("/api/logout/process").permitAll()
 	            .addLogoutHandler(customLogoutHandler)
 	            .logoutSuccessHandler(customLogoutSuccessHandler)
 	            .deleteCookies("JSESSIONID")
@@ -65,7 +65,7 @@ public class SecurityConfig {
             );
 	    
 	    http.authorizeHttpRequests(authz -> authz
-	    		.requestMatchers("/web/login", "/web/login-fail", "/error", "/api/oauth/refresh", "/api/logout/*", "/web/signup", "/api/login/*").permitAll()
+	    		.requestMatchers("/web/login", "/web/login/*", "/api/login/*", "/web/login-fail", "/error", "/api/oauth/refresh", "/api/logout/*").permitAll()
 	    		.anyRequest().authenticated()
 	    	);
 	    

@@ -23,11 +23,10 @@ public class UserService {
 	
 	// 유저 정보 등록
 	public UserEntity createUserData(String username, String email, String password) {
-		UserEntity userEntity = UserEntity.builder()
-				.userName(username)
-				.email(email)
-				.password(passwordEncoder.encode(password))
-				.build();
+		UserEntity userEntity = new UserEntity();
+		userEntity.setUsername(username);
+		userEntity.setEmail(email);
+		userEntity.setPassword(passwordEncoder.encode(password));
 		userRepository.save(userEntity);
 
 		return userEntity;

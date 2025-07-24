@@ -1,20 +1,22 @@
 package oauth.core.entity;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.Comment;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
-@Builder
 @Entity
+@NoArgsConstructor
 @Table(name = "user")
-public class UserEntity {
+public class UserEntity implements UserDetails {
 
 	@Id
 	@Comment("사용자 ID")
@@ -23,7 +25,7 @@ public class UserEntity {
 
 	@Comment("사용자 명")
 	@Column(nullable = false, length=50)
-	private String userName;
+	private String username;
 
 	@Comment("이메일")
 	@Column(nullable = false, unique = true, length=50)
@@ -40,4 +42,10 @@ public class UserEntity {
 	@Comment("수정 시간")
 	@Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private LocalDateTime updated_time;
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of(new SimpleGrantedAuthority("USER"));
+	}
+
 }
