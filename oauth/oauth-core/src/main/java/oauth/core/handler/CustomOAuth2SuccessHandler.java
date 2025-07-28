@@ -1,23 +1,23 @@
 package oauth.core.handler;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.UUID;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import oauth.core.properties.JwtProperties;
 import oauth.core.util.CookieUtil;
 import oauth.core.util.JwtUtil;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.util.Map;
+import java.util.UUID;
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {

@@ -1,24 +1,5 @@
 package oauth.core.util;
 
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -27,6 +8,25 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import oauth.core.model.oauth.OauthAttribute;
 import oauth.core.properties.JwtProperties;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Component;
+
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -47,24 +47,27 @@ public class JwtUtil {
 																	.stream()
 																	.map(GrantedAuthority::getAuthority)
 																	.collect(Collectors.joining(",")))
-				.id(id)
-				.issuedAt(new Date(System.currentTimeMillis()))
-				.expiration(new Date(System.currentTimeMillis() + jwtProperties.getAccesstokenTime().toMillis()))
-				.signWith(privateKey)
-				.compact();
-	}
-
-	// oauth2 JWT 토큰 생성
-	public String generateOauth2Token(Authentication authentication, String id) {
-		OauthAttribute oauthAttribute = new OauthAttribute((OAuth2AuthenticationToken) authentication);
-
-		return Jwts.builder().subject(oauthAttribute.getEmail())
-								.claim("authorities", "ROLE_ANONYMOUS")
 								.id(id)
 								.issuedAt(new Date(System.currentTimeMillis()))
 								.expiration(new Date(System.currentTimeMillis() + jwtProperties.getAccesstokenTime().toMillis()))
 								.signWith(privateKey)
 								.compact();
+	}
+
+	// oauth2 JWT 토큰 생성
+	public String generateOauth2Token(Authentication authentication, String id) {
+		OAuth2User oauth2User = ((OAuth2AuthenticationToken) authentication).getPrincipal();
+		String clientRegistrationId = ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId().toUpperCase();
+
+		OauthAttribute oauthAttribute = new OauthAttribute(oauth2User, clientRegistrationId);
+
+		return Jwts.builder().subject(oauthAttribute.getEmail())
+							.claim("authorities", "ROLE_ANONYMOUS")
+							.id(id)
+							.issuedAt(new Date(System.currentTimeMillis()))
+							.expiration(new Date(System.currentTimeMillis() + jwtProperties.getAccesstokenTime().toMillis()))
+							.signWith(privateKey)
+							.compact();
 	}
 
 	// Refresh Token 생성

@@ -1,11 +1,9 @@
 package oauth.core.model.oauth;
 
-import java.util.Map;
-
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import lombok.Getter;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import lombok.Getter;
+import java.util.Map;
 
 @Getter
 public class OauthAttribute {
@@ -15,11 +13,8 @@ public class OauthAttribute {
 	private final Map<String, Object> attributes;
 	
 	@SuppressWarnings("unchecked")
-	public OauthAttribute(OAuth2AuthenticationToken oauth2AuthenticationToken) {
-		OAuth2User oauth2User = oauth2AuthenticationToken.getPrincipal();
-        String clientRegistrationId = oauth2AuthenticationToken.getAuthorizedClientRegistrationId().toUpperCase();
-        
-		Map<String, Object> attributes = oauth2User.getAttributes();
+	public OauthAttribute(OAuth2User oAuth2User, String clientRegistrationId) {
+		Map<String, Object> attributes = oAuth2User.getAttributes();
 
 		if ("NAVER".equals(clientRegistrationId)) {
 			attributes = (Map<String, Object>) attributes.get("response");

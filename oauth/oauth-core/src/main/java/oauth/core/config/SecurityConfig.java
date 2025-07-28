@@ -5,6 +5,7 @@ import oauth.core.filter.JwtAuthenticationFilter;
 import oauth.core.handler.*;
 import oauth.core.properties.JwtProperties;
 import oauth.core.provider.CustomAuthenticationProvider;
+import oauth.core.service.CustomOauth2UserService;
 import oauth.core.util.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +33,7 @@ public class SecurityConfig {
 	private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
 	private final CustomLogoutHandler customLogoutHandler;
 	private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
+	private final CustomOauth2UserService customOauth2UserService;
 	private final JwtUtil jwtUtil;
 	private final JwtProperties jwtProperties;
 	
@@ -57,9 +59,12 @@ public class SecurityConfig {
 	    	);
 	    
 	    http.oauth2Login(oauth2 -> oauth2
-                .redirectionEndpoint(redir -> redir
-                    .baseUri("/login/oauth2/code/*")
-                )
+				.redirectionEndpoint(redir -> redir
+						.baseUri("/login/oauth2/code/*")
+				)
+				.userInfoEndpoint(userInfo -> userInfo
+					.userService(customOauth2UserService)
+				)
                 .successHandler(customOAuth2SuccessHandler)
                 .failureHandler(customOAuth2FailureHandler)
             );
