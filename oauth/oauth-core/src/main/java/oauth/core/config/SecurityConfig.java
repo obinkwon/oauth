@@ -7,6 +7,7 @@ import oauth.core.properties.JwtProperties;
 import oauth.core.provider.CustomAuthenticationProvider;
 import oauth.core.service.CustomOauth2UserService;
 import oauth.core.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -36,12 +37,15 @@ public class SecurityConfig {
 	private final CustomOauth2UserService customOauth2UserService;
 	private final JwtUtil jwtUtil;
 	private final JwtProperties jwtProperties;
+
+	@Value("${login.enabled:true}")
+	private boolean loginEnabled;
 	
 	@Bean
 	@Order(0)
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(AbstractHttpConfigurer::disable);
-		
+
 	    http.formLogin(form -> form
 	        	.loginPage("/web/login")
 	            .loginProcessingUrl("/api/login/process")
@@ -68,12 +72,21 @@ public class SecurityConfig {
                 .successHandler(customOAuth2SuccessHandler)
                 .failureHandler(customOAuth2FailureHandler)
             );
-	    
-	    http.authorizeHttpRequests(authz -> authz
-	    		.requestMatchers("/web/login", "/web/login/*", "/api/login/*", "/web/login-fail", "/error", "/api/oauth/refresh", "/api/logout/*").permitAll()
-	    		.anyRequest().authenticated()
-	    	);
-	    
+
+		if (loginEnabled) {
+			// 로그인 활성화
+			http.authorizeHttpRequests(authz -> authz
+					.requestMatchers("/web/login", "/web/login/*", "/api/login/*", "/web/login-fail", "/error", "/api/oauth/refresh", "/api/logout/*").permitAll()
+					.anyRequest().authenticated()
+				);
+		} else {
+			// 로그인 비활성화
+			http.authorizeHttpRequests(authz -> authz
+					.anyRequest().permitAll()
+				);
+		}
+
+
 	    http.anonymous(AbstractHttpConfigurer::disable);
 	    
 	    http.sessionManagement(session -> session

@@ -34,7 +34,7 @@ public class UserEntity implements UserDetails {
 	private String email;
 	
 	@Comment("비밀번호")
-	@Column(nullable = false, length=100)
+	@Column(length=100)
 	private String password;
 
 	@Comment("생성 시간")

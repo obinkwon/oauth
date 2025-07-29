@@ -61,23 +61,25 @@ public class JwtUtil {
 
 		OauthAttribute oauthAttribute = new OauthAttribute(oauth2User, clientRegistrationId);
 
-		return Jwts.builder().subject(oauthAttribute.getEmail())
-							.claim("authorities", "ROLE_ANONYMOUS")
-							.id(id)
-							.issuedAt(new Date(System.currentTimeMillis()))
-							.expiration(new Date(System.currentTimeMillis() + jwtProperties.getAccesstokenTime().toMillis()))
-							.signWith(privateKey)
-							.compact();
+		return Jwts.builder()
+					.subject(oauthAttribute.getEmail())
+					.claim("authorities", "USER")
+					.id(id)
+					.issuedAt(new Date(System.currentTimeMillis()))
+					.expiration(new Date(System.currentTimeMillis() + jwtProperties.getAccesstokenTime().toMillis()))
+					.signWith(privateKey)
+					.compact();
 	}
 
 	// Refresh Token 생성
 	public void refreshToken(String id) {
 
-		String refreshToken = Jwts.builder().id(id)
-											.issuedAt(new Date())
-											.expiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshtokenTime().toMillis()))
-											.signWith(privateKey)
-											.compact();
+		String refreshToken = Jwts.builder()
+									.id(id)
+									.issuedAt(new Date())
+									.expiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshtokenTime().toMillis()))
+									.signWith(privateKey)
+									.compact();
 
 		// Redis에 Refresh Token 저장 (key는 id:{id}:refresh, value는 refreshToken)
 		redisTemplate.opsForValue().set("id:" + id + ":refresh", refreshToken, 7, TimeUnit.DAYS);
@@ -88,10 +90,8 @@ public class JwtUtil {
 		try {
 			Claims claims = getToken(accessToken);
 			String id = claims.getId();
-			String redisToken = redisTemplate.opsForValue().get("id:" + id + ":refresh");
-
 			// Redis에 저장된 Refresh Token과 비교하여 유효성 확인
-			return redisToken;
+			return redisTemplate.opsForValue().get("id:" + id + ":refresh");
 		} catch (JwtException e) {
 			log.error("refreshTokenValid JwtException ::: {}", e.getMessage());
 			return null;
