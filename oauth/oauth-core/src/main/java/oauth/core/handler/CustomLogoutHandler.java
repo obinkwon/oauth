@@ -23,7 +23,6 @@ public class CustomLogoutHandler implements LogoutHandler {
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
     	// 쿠키에서 토큰 가져오기
     	String accessToken = CookieUtil.getCookieToken(request);
-    	log.info("accessToken ::: {}",accessToken);
     	if(StringUtils.isNotEmpty(accessToken)) {
     		// redis에서 해당 refresh 토큰 삭제
     		jwtUtil.expireRefreshToken(accessToken);

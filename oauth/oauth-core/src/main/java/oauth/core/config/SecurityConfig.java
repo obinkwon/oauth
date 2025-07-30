@@ -5,7 +5,7 @@ import oauth.core.filter.JwtAuthenticationFilter;
 import oauth.core.handler.*;
 import oauth.core.properties.JwtProperties;
 import oauth.core.provider.CustomAuthenticationProvider;
-import oauth.core.service.CustomOauth2UserService;
+import oauth.core.service.CustomOAuth2UserService;
 import oauth.core.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -34,7 +34,7 @@ public class SecurityConfig {
 	private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
 	private final CustomLogoutHandler customLogoutHandler;
 	private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
-	private final CustomOauth2UserService customOauth2UserService;
+	private final CustomOAuth2UserService customOauth2UserService;
 	private final JwtUtil jwtUtil;
 	private final JwtProperties jwtProperties;
 

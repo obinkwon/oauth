@@ -3,7 +3,7 @@ package oauth.core.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import oauth.core.entity.UserEntity;
-import oauth.core.model.oauth.OauthAttribute;
+import oauth.core.model.oauth.OAuthAttribute;
 import oauth.core.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -21,7 +21,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CustomOauth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
 
@@ -33,7 +33,7 @@ public class CustomOauth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
         String clientRegistrationId = userRequest.getClientRegistration().getRegistrationId().toUpperCase();
         // Oauth attribute
-        OauthAttribute oauthAttribute = new OauthAttribute(oAuth2User, clientRegistrationId);
+        OAuthAttribute oauthAttribute = new OAuthAttribute(oAuth2User, clientRegistrationId);
         // Oauth 인증 이메일
         String email = oauthAttribute.getEmail();
         // 인증정보에서 email 정보 체크

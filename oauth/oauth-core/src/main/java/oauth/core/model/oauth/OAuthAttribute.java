@@ -6,7 +6,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import java.util.Map;
 
 @Getter
-public class OauthAttribute {
+public class OAuthAttribute {
 
 	private final String email;
 	private final String registrationId;
@@ -14,7 +14,7 @@ public class OauthAttribute {
 	private final String nameAttributeKey;
 
 	@SuppressWarnings("unchecked")
-	public OauthAttribute(OAuth2User oAuth2User, String clientRegistrationId) {
+	public OAuthAttribute(OAuth2User oAuth2User, String clientRegistrationId) {
 		Map<String, Object> attributes = oAuth2User.getAttributes();
 		String nameAttributeKey = "email";
 

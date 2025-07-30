@@ -6,7 +6,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import oauth.core.model.oauth.OauthAttribute;
+import oauth.core.model.oauth.OAuthAttribute;
 import oauth.core.properties.JwtProperties;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -59,7 +59,7 @@ public class JwtUtil {
 		OAuth2User oauth2User = ((OAuth2AuthenticationToken) authentication).getPrincipal();
 		String clientRegistrationId = ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId().toUpperCase();
 
-		OauthAttribute oauthAttribute = new OauthAttribute(oauth2User, clientRegistrationId);
+		OAuthAttribute oauthAttribute = new OAuthAttribute(oauth2User, clientRegistrationId);
 
 		return Jwts.builder()
 					.subject(oauthAttribute.getEmail())
